@@ -46,7 +46,7 @@ def create_app(users: list) -> AppTracker:
     return app_tracker
 
 if __name__ == "__main__":
-    user_file = r"C:\Users\GUEGUEN\Desktop\WSApp\IM\DB\user\user_table.XLSX"  # Remplacez par le chemin réel
+    user_file = r"C:\Users\GUEGUEN\Desktop\WSApp\IM\data_engineering\sensor_api\data\user\user_table.XLSX"  # Remplacez par le chemin réel
     users = create_users_from_excel(user_file)
     app_tracker = create_app(users)
     business_date = date.today()
