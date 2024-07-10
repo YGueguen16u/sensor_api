@@ -279,7 +279,7 @@ class Standard(User):
         user_id (int): L'identifiant unique de l'utilisateur.
     """
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = r"sensor_api\data\user\standard_class.xlsx"
+        type_food_file = "sensor_api/data/user/standard_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'standard', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -310,7 +310,7 @@ class MeatLover(User):
         user_id (int): L'identifiant unique de l'utilisateur.
     """
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = r"sensor_api\data\user\meat_lover_class.xlsx"
+        type_food_file = "sensor_api/data/user/meat_lover_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'meat_lover', type_food_file)        
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -340,7 +340,7 @@ class Vegetarian(User):
         user_id (int): L'identifiant unique de l'utilisateur.
     """
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = r"sensor_api\data\user\vegetarian_class.xlsx"
+        type_food_file = "sensor_api/data/user/vegetarian_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'vegetarian', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -370,7 +370,7 @@ class Vegan(User):
         user_id (int): L'identifiant unique de l'utilisateur.
     """
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = r"sensor_api\data\user\vegan_class.xlsx"
+        type_food_file = "sensor_api/data/user/vegan_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'vegan', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -400,7 +400,7 @@ class Fasting(User):
         user_id (int): L'identifiant unique de l'utilisateur.
     """
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = r"sensor_api\data\user\fasting_class.xlsx"
+        type_food_file = "sensor_api/data/user/fasting_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'fasting', type_food_file)
         self.heures_repas = {
             1: '12:00',  # dejeuner
@@ -426,7 +426,7 @@ class Random(User):
         user_id (int): L'identifiant unique de l'utilisateur.
     """
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = r"sensor_api\data\user\random_eater_class.xlsx"
+        type_food_file = r"sensor_api/data/user/random_eater_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'random', type_food_file)
         self.heures_repas = {
             1: '13:00',  

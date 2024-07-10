@@ -22,7 +22,7 @@ class AppTracker:
         """
         Simulate the connections and food consumption for each user for a day
         """
-        food_processed = r"sensor_api\data\food_processed.XLSX"
+        food_processed = "sensor_api/data/food_processed.XLSX"
         aliments_df = pd.read_excel(food_processed)
 
         # Ensure reproducibility of measurements
