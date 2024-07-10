@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from datetime import date
 #from data_engineering.sensor_api.fake_data.sensor import create_user_instance
-from data_engineering.sensor_api.fake_data.sensor import create_user_instance
+from .sensor import create_user_instance
 import sys
 import os
 

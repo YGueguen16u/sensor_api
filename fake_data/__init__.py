@@ -14,7 +14,7 @@ for root, dirs, files in os.walk(os.path.abspath(os.path.dirname(__file__))):
     print(root, dirs, files)
 
 #from data_engineering.sensor_api.fake_data.app_tracker import AppTracker
-from sensor_api.fake_data.app_tracker import AppTracker
+from .app_tracker import AppTracker
 
 from datetime import date
 import pandas as pd
