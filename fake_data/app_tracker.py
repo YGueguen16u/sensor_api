@@ -3,6 +3,7 @@ from typing import Tuple, Any
 import pandas as pd
 import numpy as np
 from datetime import date
+#from data_engineering.sensor_api.fake_data.sensor import create_user_instance
 from data_engineering.sensor_api.fake_data.sensor import create_user_instance
 import sys
 import os
@@ -21,7 +22,7 @@ class AppTracker:
         """
         Simulate the connections and food consumption for each user for a day
         """
-        food_processed = r"C:\Users\GUEGUEN\Desktop\WSApp\IM\DB\raw_food_data\food_processed.XLSX"
+        food_processed = r"sensor_api\data\food_processed.XLSX"
         aliments_df = pd.read_excel(food_processed)
 
         # Ensure reproducibility of measurements

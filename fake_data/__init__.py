@@ -13,7 +13,8 @@ print(f"sys.path: {sys.path}")
 for root, dirs, files in os.walk(os.path.abspath(os.path.dirname(__file__))):
     print(root, dirs, files)
 
-from data_engineering.sensor_api.fake_data.app_tracker import AppTracker
+#from data_engineering.sensor_api.fake_data.app_tracker import AppTracker
+from sensor_api.fake_data.app_tracker import AppTracker
 
 from datetime import date
 import pandas as pd
@@ -42,7 +43,7 @@ def create_app() -> AppTracker:
     """
     Create an instance of AppTracker with the given users
     """
-    file_path = r"C:\Users\GUEGUEN\Desktop\WSApp\IM\data_engineering\sensor_api\data\user\user_table.XLSX"
+    file_path = r"sensor_api\data\user\user_table.XLSX"
     users = create_users_from_excel(file_path)
     app_tracker = AppTracker(users)
     return app_tracker
