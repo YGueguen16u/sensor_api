@@ -145,7 +145,7 @@ class User:
         for type_aliment in types_choisis:
             aliments_du_type = aliments_df[aliments_df['Type'] == type_aliment]
             aliment_choisi = aliments_du_type.sample(n=1).iloc[0].to_dict()
-            aliment_choisi['Repas'] = repas  # Ajouter l'information du repas
+            aliment_choisi['Repas'] = repas
 
             # Déterminer la quantité de l'aliment
             quantite = self.determiner_quantite(type_aliment)
@@ -181,12 +181,12 @@ class User:
         repas_col_avg = f'Meal_{repas}_avg'
         moyenne = self.probabilites_df[self.probabilites_df['Types'] == type_aliment][repas_col_avg].values[0]
         return moyenne
-        
-    def simulate_daily_activity(self, business_date: date, aliments_df: pd.DataFrame):
+
+    def simulate_daily_activity(self, aliments_df: pd.DataFrame):
         """
         Simule les activités alimentaires quotidiennes de l'utilisateur pour une date donnée.
 
-        Génère les heures de connexion, choisit les types d'aliments pour chaque repas et sélectionne 
+        Génère les heures de connexion, choisit les types d'aliments pour chaque repas et sélectionne
         les aliments consommés en fonction des probabilités et des contraintes caloriques.
 
         Args:
@@ -195,37 +195,73 @@ class User:
         """
         heures_de_connexion = self.generer_heures_connexion()
         self.aliments_consomme = []
+        repas_logs = []
+        aliments_logs = []
 
         for repas, heure in heures_de_connexion:
             types_choisis = self.choisir_types_aliments(repas)
             aliments_selectionnes = self.selectionner_aliments(
-                aliments_df, types_choisis, repas,
+                aliments_df,
+                types_choisis,
+                repas,
                 self.intervalles_calories[repas][0],
                 self.intervalles_calories[repas][1]
             )
             self.aliments_consomme.extend(aliments_selectionnes)
-            print(f"{self.nom} s'est connecté à {heure.strftime('%Y-%m-%d %H:%M:%S')}")
+            repas_logs.append({'meal_id': repas, 'heure_repas': heure.strftime('%Y-%m-%d %H:%M:%S')})
+
             for aliment in aliments_selectionnes:
                 quantite = aliment.get('Quantite', 1)
                 calories_par_portion = aliment['Valeur calorique']
                 calories_totales = calories_par_portion * quantite
-                print(f"{self.nom} a consommé {quantite} portion(s) de {aliment['Aliment']} ({calories_totales} calories au total) pour le repas {repas}")
+
+                aliments_logs.append({
+                    'aliment': aliment['Aliment'],
+                    'quantite': quantite,
+                    'calories': calories_totales,
+                    'meal_id': repas
+                })
+
+        repas_df = pd.DataFrame(repas_logs)
+        aliments_df = pd.DataFrame(aliments_logs)
+
+        total_calories_per_meal = aliments_df.groupby('meal_id')['calories'].sum().reset_index()
+        total_calories_per_meal.rename(columns={'calories': 'total_calorique'}, inplace=True)
+
+        # Fusionner avec repas_df pour ajouter la colonne total_calorique
+        repas_df = repas_df.merge(total_calories_per_meal, on='meal_id', how='left')
+        return repas_df, aliments_df
 
 
-    def get_daily_activity(self, business_date: date) -> dict:
+    def get_daily_activity(self, business_date: date, aliments_df: pd.DataFrame) -> dict:
         """
         Récupère le journal d'activité alimentaire de l'utilisateur pour une date spécifique.
 
         Args:
+            aliments_df: Table des aliments
             business_date (date): La date pour laquelle récupérer le journal d'activité.
 
         Returns:
             dict: Un dictionnaire contenant la date et la liste des aliments consommés.
         """
-        return {
-            'date': business_date,
-            'aliments_consomme': self.aliments_consomme
-        }
+
+        np.random.seed(seed=business_date.toordinal())
+
+        repas_df, aliments_df = self.simulate_daily_activity(aliments_df)
+        repas_df['heure_repas'] = business_date.strftime('%Y-%m-%d %H:%M:%S')
+        str = []
+
+        connexion_day =dict()
+        connexion_day['date'] = business_date
+
+        for id in repas_df['meal_id'].unique():
+            for aliments in aliments_df[aliments_df['meal_id'] == id].itertuples():
+                str[id] += f"aliments : {aliments_df['aliement']}, quantité : {aliments_df['quantite']}, calories : {aliments_df['calories']} \n "
+            str[id] += f"Total : {repas_df['total_calorique']}"
+            connexion_day['meal'+id] = str[id]
+
+        return connexion_day
+
 
 # Sous-classe pour les mangeurs standard
 class Standard(User):

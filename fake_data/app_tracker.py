@@ -1,3 +1,5 @@
+from typing import Tuple, Any
+
 import pandas as pd
 import numpy as np
 from datetime import date
@@ -29,26 +31,30 @@ class AppTracker:
         for user in self.users:
             user.simulate_daily_activity(business_date, aliments_df)
 
-    def get_user_activity(self, user_id: int, business_date: date) -> dict:
-        """
+    """
+    def get_user_activity(self, user_id: int, business_date: date, aliments_df) -> dict:
+
         Get the activity log for a specific user on a specific date
-        """
+
+
 
         # Ensure reproducibility of measurements
-        np.random.seed(seed=business_date.toordinal())
 
         user = next((u for u in self.users if u.user_id == user_id), None)
         if user:
-            return user.get_daily_activity(business_date)
+            return user.get_daily_activity(business_date, aliments_df)
         return {}
-
-    def get_connexion_traffic(self, sensor_id: int, business_date: date) -> int:
+    """
+    def get_connexion(self, meal_id: int, business_date: date, aliments_df= pd.DataFrame, nom=str) -> tuple[Any, Any]:
         """Return the traffic for one sensor at a date"""
-        return self.sensors[sensor_id].get_visit_count(business_date)
+        user = next((u for u in self.users if u.nom == nom), None)
+        if user:
+            connexion_day = user.get_daily_activity(business_date, aliments_df)
+        return connexion_day['date'], connexion_day[meal_id]
 
-    def get_all_traffic(self, business_date: date) -> int:
+    def get_all_connexion(self, business_date: date, aliments_df=pd.DataFrame, nom=str) -> int:
         """Return the traffic for all sensors of the store at a date"""
-        visit = 0
-        for i in range(8):
-            visit += self.sensors[i].get_visit_count(business_date)
-        return visit
+        user = next((u for u in self.users if u.nom == nom), None)
+        if user:
+            connexion_day = user.get_daily_activity(business_date, aliments_df)
+        return connexion_day
