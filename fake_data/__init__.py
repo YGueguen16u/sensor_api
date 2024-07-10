@@ -47,13 +47,3 @@ def create_app() -> AppTracker:
     app_tracker = AppTracker(users)
     return app_tracker
 
-"""
-if __name__ == "__main__":
-    user_file = r"C:\Users\GUEGUEN\Desktop\WSApp\IM\data_engineering\sensor_api\data\user\user_table.XLSX"
-    users = create_users_from_excel(user_file)
-    app_tracker = create_app(users)
-    business_date = date.today()
-    food_processed = r"C:\Users\GUEGUEN\Desktop\WSApp\IM\DB\raw_food_data\food_processed.XLSX"
-    aliments_df = pd.read_excel(food_processed)
-    app_tracker.simulate_day(business_date, aliments_df)
-"""
