@@ -62,38 +62,15 @@ def connexion(
         )
     else:
         classe_mangeur = user.classe_mangeur
-
         # Check the value of meal_id
-        if classe_mangeur == 'standard' and meal_id and (meal_id > 4 or meal_id < 1):
-            return JSONResponse(
-                status_code=404, content="Meal_id should be between 1 and 4"
-            )
-        if classe_mangeur == 'meat_lover' and meal_id and (meal_id > 4 or meal_id < 1):
-            return JSONResponse(
-                status_code=404, content="Meal_id should be between 1 and 4"
-            )
-        if classe_mangeur == 'vegan' and meal_id and (meal_id > 4 or meal_id < 1):
-            return JSONResponse(
-                status_code=404, content="Sensor_id should be between 1 and 4"
-            )
-        if classe_mangeur == 'vegetarian' and meal_id and (meal_id > 4 or meal_id < 1):
-            return JSONResponse(
-                status_code=404, content="Sensor_id should be between 1 and 4"
-            )
-        if classe_mangeur == 'random' and meal_id and (meal_id != 1):
-            return JSONResponse(
-                status_code=404, content="Sensor_id should be 1"
-            )
-        if classe_mangeur == 'fasting' and meal_id and (meal_id > 2 or meal_id < 1):
-            return JSONResponse(
-                status_code=404, content="Sensor_id should be between 1 or 2"
-            )
+        if classe_mangeur in ['standard', 'meat_lover', 'vegan', 'vegetarian'] and (meal_id > 4 or meal_id < 1):
+            return JSONResponse(status_code=404, content="Meal_id should be between 1 and 4")
+        if classe_mangeur == 'random' and meal_id != 1:
+            return JSONResponse(status_code=404, content="Meal_id should be 1")
+        if classe_mangeur == 'fasting' and (meal_id > 2 or meal_id < 1):
+            return JSONResponse(status_code=404, content="Meal_id should be between 1 and 2")
 
-        connexion_counts = user.get_connexion(
-            meal_id,
-            date(year, month, day),
-            user_id
-        )
+        connexion_counts = user.get_connexion(meal_id, date(year, month, day), aliments_df)
 
     if connexion_counts < 0:
         return JSONResponse(
