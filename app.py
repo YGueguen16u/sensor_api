@@ -56,7 +56,7 @@ def connexion(
 
     # If no sensor choose return the visit for the whole store
     if meal_id is None:
-        connexion_counts = user_list.get_all_connexion(
+        connexion_counts = app_tracker.get_all_connexion(
             user_id,
             date(year, month, day)
         )
@@ -70,7 +70,7 @@ def connexion(
         if classe_mangeur == 'fasting' and (meal_id > 2 or meal_id < 1):
             return JSONResponse(status_code=404, content="Meal_id should be between 1 and 2")
 
-        connexion_counts = user_list.get_connexion(meal_id, date(year, month, day), aliments_df)
+        connexion_counts = app_tracker.get_connexion(meal_id, date(year, month, day), aliments_df)
 
     if connexion_counts < 0:
         return JSONResponse(
