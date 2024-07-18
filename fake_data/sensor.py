@@ -285,7 +285,7 @@ class Standard(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "standard_class.xlsx"
+        type_food_file = "standard_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'standard', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -350,7 +350,7 @@ class Vegetarian(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "vegetarian_class.xlsx"
+        type_food_file = "vegetarian_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'vegetarian', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -382,7 +382,7 @@ class Vegan(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "vegan_class.xlsx"
+        type_food_file = "vegan_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'vegan', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -414,7 +414,7 @@ class Fasting(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "fasting_class.xlsx"
+        type_food_file = "fasting_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'fasting', type_food_file)
         self.heures_repas = {
             1: '12:00',  # dejeuner
@@ -442,7 +442,7 @@ class Random(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "random_eater_class.xlsx"
+        type_food_file = "random_eater_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'random', type_food_file)
         self.heures_repas = {
             1: '13:00',
