@@ -11,8 +11,10 @@ from fastapi.responses import JSONResponse
 
 from fake_data import create_app
 
-user_dict = create_app().__dict__
+app_tracker = create_app()
+user_list = app_tracker.users
 app = FastAPI()
+
 
 def find_user_by_id(users, user_id):
     for user in users:
@@ -20,24 +22,23 @@ def find_user_by_id(users, user_id):
             return user
     return None
 
+
 # https://food-tracking-de-ml-project.onrender.com/?user_id=4&year=2024&month=07&day=18
 
 # curl -G https://fake-retail-sensor-api.onrender.com -d "user_id=4" -d "year=2024" -d "month=07" -d "day=18"
 @app.get("/")
 def connexion(
-    user_id: int,
-    year: int,
-    month: int,
-    day: int,
-    meal_id: Optional[int] = None,
-    aliments_df=pd.DataFrame
+        user_id: int,
+        year: int,
+        month: int,
+        day: int,
+        meal_id: Optional[int] = None,
+        aliments_df=pd.DataFrame
 ) -> JSONResponse:
-
     # Trouver l'utilisateur par user_id
-    user = find_user_by_id(user_dict, user_id)
+    user = find_user_by_id(user_list, user_id)
     if user is None:
         return JSONResponse(status_code=404, content="User Not found")
-
 
     # Check the year
     if year < 2024:
