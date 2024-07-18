@@ -39,6 +39,10 @@ class User:
         self.probabilites_df = pd.read_excel(self.type_food_file)
         self.aliments_consomme = []
 
+    def __repr__(self):
+        return (f"User(nom={self.nom}, prenom={self.prenom}, age={self.age}, sexe={self.sexe}, "
+                f"user_id={self.user_id}, classe_mangeur={self.classe_mangeur})")
+
     def generer_heures_connexion(self, business_date=date):
         """
         Génère les heures de connexion pour chaque repas avec une variation aléatoire.

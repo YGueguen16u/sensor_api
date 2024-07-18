@@ -23,36 +23,16 @@ class AppTracker:
         """
         Initialize the AppTracker with user data
         """
-        self.users = [create_user_instance(user) for user in user_data]
+        # _users pour l'attribut interne dans la classe AppTracker afin d'éviter le conflit avec la propriété users.
+        self._users = [create_user_instance(user) for user in user_data]
 
-    def simulate_day(self, business_date: date) -> None:
+    @property
+    def users(self):
         """
-        Simulate the connections and food consumption for each user for a day
+        Getter for the users list
         """
-        food_processed = "sensor_api/data/food_processed.XLSX"
-        aliments_df = pd.read_excel(food_processed)
+        return self._users
 
-        # Ensure reproducibility of measurements
-        np.random.seed(seed=business_date.toordinal())
-        # Find out which day the business_date corresponds to: Monday = 0, Sunday = 6
-        # week_day = business_date.weekday()
-        for user in self.users:
-            user.get_daily_activity(business_date, aliments_df)
-
-    """
-    def get_user_activity(self, user_id: int, business_date: date, aliments_df) -> dict:
-
-        Get the activity log for a specific user on a specific date
-
-
-
-        # Ensure reproducibility of measurements
-
-        user = next((u for u in self.users if u.user_id == user_id), None)
-        if user:
-            return user.get_daily_activity(business_date, aliments_df)
-        return {}
-    """
 
     def get_connexion(self, meal_id: int, business_date: date, user_id=int) -> dict:
         """Return the traffic for one sensor at a date"""

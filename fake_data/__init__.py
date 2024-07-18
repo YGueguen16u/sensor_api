@@ -62,5 +62,6 @@ if __name__ == "__main__":
     print("Running test for create_app function...")
     date = date.today().strftime("%Y-%m-%d")
     app = create_app()
+    print("app", app.users)
     #print(app.get_connexion(2, date, 4))
-    print(app.get_all_connexion(6, date))
+    #print(app.get_all_connexion(6, date))

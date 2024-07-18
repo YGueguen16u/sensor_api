@@ -16,10 +16,13 @@ app = FastAPI()
 
 def find_user_by_id(users, user_id):
     for user in users:
-        if user['user_id'][0] == user_id:
+        if user.user_id == user_id:
             return user
     return None
 
+# https://food-tracking-de-ml-project.onrender.com/?user_id=4&year=2024&month=07&day=18
+
+# curl -G https://fake-retail-sensor-api.onrender.com -d "user_id=4" -d "year=2024" -d "month=07" -d "day=18"
 @app.get("/")
 def connexion(
     user_id: int,
