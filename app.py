@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 
 from fake_data import create_app
 
-user_dict = create_app()
+user_dict = create_app().__dict__
 app = FastAPI()
 
 
@@ -18,7 +18,7 @@ def connexion(
     # If the store is not in the dictionary
     if not (user_id in user_dict.items()):
         return JSONResponse(status_code=404, content="User Not found")
-    classe_mangeur = user_dict[user_id]
+    classe_mangeur = user_dict['classe_mangeur']
 
     # Check the value of meal_id
     if classe_mangeur == 'standard' and meal_id and (meal_id > 4 or meal_id < 1):

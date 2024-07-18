@@ -43,7 +43,7 @@ def create_app() -> AppTracker:
     """
     Create an instance of AppTracker with the given users
     """
-    file_path = "sensor_api/data/user/user_table.XLSX"
+    file_path = "user_table.XLSX"
     users = create_users_from_excel(file_path)
     app_tracker = AppTracker(users)
     return app_tracker
