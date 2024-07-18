@@ -56,7 +56,7 @@ def connexion(
 
     # If no sensor choose return the visit for the whole store
     if meal_id is None:
-        connexion_counts = user['user_id'].get_all_connexion(
+        connexion_counts = user.get_all_connexion(
             user_id,
             date(year, month, day)
         )
