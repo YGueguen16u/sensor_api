@@ -382,12 +382,7 @@ class Vegan(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-
-        try :
-            type_food_file = "vegan_class.xlsx"
-        except :
-            type_food_file = os.path.join(current_dir, 'vegan_class.xlsx')
-
+        type_food_file = "vegan_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'vegan', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
