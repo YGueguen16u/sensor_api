@@ -38,7 +38,7 @@ class AppTracker:
 
     def get_connexion(self, meal_id: int, business_date: date, user_id=int) -> dict:
         """Return the traffic for one sensor at a date"""
-        food_processed = "food_processed.XLSX"
+        food_processed = "food_processed.xlsx"
         aliments_df = pd.read_excel(food_processed)
         user = next((u for u in self.users if u.user_id == user_id), None)
         connexion_day = dict()
@@ -79,7 +79,7 @@ class AppTracker:
 
     def get_all_connexion(self, user_id: int, business_date: date) -> dict:
         """Return the traffic for all sensors of the store at a date"""
-        food_processed = "food_processed.XLSX"
+        food_processed = "food_processed.xlsx"
         aliments_df = pd.read_excel(food_processed)
         user = next((u for u in self.users if u.user_id == user_id), None)
         connexion_day = None if user is None else user.get_daily_activity(user_id, business_date, aliments_df)
