@@ -61,7 +61,7 @@ def connexion(
             date(year, month, day)
         )
     else:
-        classe_mangeur = user['classe_mangeur']
+        classe_mangeur = user.classe_mangeur
 
         # Check the value of meal_id
         if classe_mangeur == 'standard' and meal_id and (meal_id > 4 or meal_id < 1):
@@ -89,7 +89,7 @@ def connexion(
                 status_code=404, content="Sensor_id should be between 1 or 2"
             )
 
-        connexion_counts = user['user_id'].get_connexion(
+        connexion_counts = user.get_connexion(
             meal_id,
             date(year, month, day),
             user_id
