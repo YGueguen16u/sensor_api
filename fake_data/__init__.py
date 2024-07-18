@@ -1,7 +1,6 @@
 import sys
 import os
 
-
 # Ajouter le répertoire racine du projet au sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))
 print(f"Adding {project_root} to sys.path")
@@ -13,7 +12,8 @@ print(f"sys.path: {sys.path}")
 for root, dirs, files in os.walk(os.path.abspath(os.path.dirname(__file__))):
     print(root, dirs, files)
 
-from data_engineering.sensor_api.fake_data.app_tracker import AppTracker
+# from data_engineering.sensor_api.fake_data.app_tracker import AppTracker
+from .app_tracker import AppTracker
 
 from datetime import date
 import pandas as pd
@@ -25,7 +25,7 @@ def create_users_from_excel(file_path: str) -> list:
     """
     user_data = pd.read_excel(file_path)
     users = []
-    
+
     for _, row in user_data.iterrows():
         users.append({
             'nom': row['l_name'],
@@ -35,21 +35,15 @@ def create_users_from_excel(file_path: str) -> list:
             'user_id': row['user_id'],
             'classe_mangeur': row['classe']
         })
-    
+
     return users
 
-def create_app(users: list) -> AppTracker:
+
+def create_app() -> AppTracker:
     """
     Create an instance of AppTracker with the given users
     """
+    file_path = "sensor_api/data/user/user_table.XLSX"
+    users = create_users_from_excel(file_path)
     app_tracker = AppTracker(users)
     return app_tracker
-
-if __name__ == "__main__":
-    user_file = r"C:\Users\GUEGUEN\Desktop\WSApp\IM\DB\user\user_table.XLSX"  # Remplacez par le chemin réel
-    users = create_users_from_excel(user_file)
-    app_tracker = create_app(users)
-    business_date = date.today()
-    food_processed = r"C:\Users\GUEGUEN\Desktop\WSApp\IM\DB\raw_food_data\food_processed.XLSX"
-    aliments_df = pd.read_excel(food_processed)
-    app_tracker.simulate_day(business_date, aliments_df)
