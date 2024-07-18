@@ -21,7 +21,6 @@ except ImportError:
 from datetime import date
 import pandas as pd
 
-
 def create_users_from_excel(file_path: str) -> list:
     """
     Create user instances from an Excel file
@@ -47,7 +46,12 @@ def create_app() -> AppTracker:
     """
     Create an instance of AppTracker with the given users
     """
-    file_path = "user_table.XLSX"
+    try :
+        file_path = "user_table.XLSX"
+    except :
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(current_dir, "user_table.XLSX")
+
     users = create_users_from_excel(file_path)
     print(f"Users created: {users}")  # Ajoutez cette ligne pour vérifier la liste des utilisateurs
     app_tracker = AppTracker(users)
@@ -58,4 +62,5 @@ if __name__ == "__main__":
     print("Running test for create_app function...")
     date = date.today().strftime("%Y-%m-%d")
     app = create_app()
-    print(app.get_connexion(2, date, 4))
+    #print(app.get_connexion(2, date, 4))
+    print(app.get_all_connexion(6, date))

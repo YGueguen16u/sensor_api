@@ -95,10 +95,13 @@ class AppTracker:
 
         return connexion_day
 
-    def get_all_connexion(self, user_id: int, business_date: date, aliments_df=pd.DataFrame) -> dict:
+    def get_all_connexion(self, user_id: int, business_date: date) -> dict:
         """Return the traffic for all sensors of the store at a date"""
         food_processed = "food_processed.XLSX"
         aliments_df = pd.read_excel(food_processed)
         user = next((u for u in self.users if u.user_id == user_id), None)
-        connexion_day = None if user is None else user.simulate_daily_activity(business_date, aliments_df)
+        connexion_day = None if user is None else user.get_daily_activity(user_id, business_date, aliments_df)
+        # Convertir business_date en objet date si c'est une chaîne
+        if isinstance(business_date, str):
+            business_date = datetime.strptime(business_date, '%Y-%m-%d').date()
         return connexion_day
