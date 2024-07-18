@@ -23,7 +23,7 @@ def find_user_by_id(users, user_id):
     return None
 
 
-# https://food-tracking-de-ml-project.onrender.com/?user_id=4&year=2024&month=07&day=18
+# https://food-tracking-de-ml-project.onrender.com/?user_id=4&year=2024&month=07&day=18&meal_id=1
 
 # curl -G https://fake-retail-sensor-api.onrender.com -d "user_id=4" -d "year=2024" -d "month=07" -d "day=18"
 @app.get("/")
@@ -33,7 +33,6 @@ def connexion(
         month: int,
         day: int,
         meal_id: Optional[int] = None,
-        aliments_df=pd.DataFrame
 ) -> JSONResponse:
     # Trouver l'utilisateur par user_id
     user = find_user_by_id(user_list, user_id)
@@ -70,7 +69,7 @@ def connexion(
         if classe_mangeur == 'fasting' and (meal_id > 2 or meal_id < 1):
             return JSONResponse(status_code=404, content="Meal_id should be between 1 and 2")
 
-        connexion_counts = app_tracker.get_connexion(meal_id, date(year, month, day), aliments_df)
+        connexion_counts = app_tracker.get_connexion(meal_id, date(year, month, day), user_id)
 
     if connexion_counts < 0:
         return JSONResponse(
