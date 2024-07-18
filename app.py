@@ -71,9 +71,9 @@ def connexion(
 
         connexion_counts = app_tracker.get_connexion(meal_id, date(year, month, day), user_id)
 
-    if connexion_counts < 0:
-        return JSONResponse(
-            status_code=404, content="The store was closed try another date"
-        )
+    #if connexion_counts < 0:
+        #return JSONResponse(
+         #   status_code=404, content="The store was closed try another date"
+        #)
 
     return JSONResponse(status_code=200, content=connexion_counts)
