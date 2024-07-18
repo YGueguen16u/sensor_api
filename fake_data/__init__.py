@@ -12,8 +12,10 @@ print(f"sys.path: {sys.path}")
 for root, dirs, files in os.walk(os.path.abspath(os.path.dirname(__file__))):
     print(root, dirs, files)
 
-# from data_engineering.sensor_api.fake_data.app_tracker import AppTracker
-from .app_tracker import AppTracker
+try:
+    from data_engineering.sensor_api.fake_data.app_tracker import AppTracker
+except ImportError:
+    from .app_tracker import AppTracker
 
 from datetime import date
 import pandas as pd
@@ -24,6 +26,7 @@ def create_users_from_excel(file_path: str) -> list:
     Create user instances from an Excel file
     """
     user_data = pd.read_excel(file_path)
+    print(f"User data loaded from {file_path}:\n{user_data.head()}")  # Ajoutez cette ligne pour afficher les premières lignes du fichier Excel
     users = []
 
     for _, row in user_data.iterrows():
@@ -45,5 +48,13 @@ def create_app() -> AppTracker:
     """
     file_path = "user_table.XLSX"
     users = create_users_from_excel(file_path)
+    print(f"Users created: {users}")  # Ajoutez cette ligne pour vérifier la liste des utilisateurs
     app_tracker = AppTracker(users)
     return app_tracker
+
+if __name__ == "__main__":
+    # Code de test
+    print("Running test for create_app function...")
+    date = date.today().strftime("%Y-%m-%d")
+    app = create_app()
+    print(app.get_connexion(2, date, 4))

@@ -18,6 +18,7 @@ def connexion(
     # If the store is not in the dictionary
     if not (user_id in user_dict.items()):
         return JSONResponse(status_code=404, content="User Not found")
+
     classe_mangeur = user_dict['classe_mangeur']
 
     # Check the value of meal_id

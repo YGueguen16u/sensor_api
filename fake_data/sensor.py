@@ -35,7 +35,7 @@ class User:
         self.probabilites_df = pd.read_excel(self.type_food_file)
         self.aliments_consomme = []
 
-    def generer_heures_connexion(self):
+    def generer_heures_connexion(self, business_date=date):
         """
         Génère les heures de connexion pour chaque repas avec une variation aléatoire.
 
@@ -47,9 +47,10 @@ class User:
             list of tuple: Une liste de tuples où chaque tuple contient le numéro du repas et l'heure de connexion variée.
                         Exemple: [(1, datetime), (2, datetime), ...]
         """
+        random.seed(business_date.toordinal() + self.user_id)  # Seed based on date and user_id for reproducibility
         heures_de_connexion = []
         for repas, heure in self.heures_repas.items():
-            heure_reelle = datetime.strptime(heure, '%H:%M')
+            heure_reelle = datetime.combine(business_date, datetime.strptime(heure, '%H:%M').time())
             if self.classe_mangeur == 'random':
                 variation = timedelta(minutes=random.randint(-60, 300))
             else:
@@ -184,7 +185,7 @@ class User:
         moyenne = self.probabilites_df[self.probabilites_df['Types'] == type_aliment][repas_col_avg].values[0]
         return moyenne
 
-    def simulate_daily_activity(self, user_id, aliments_df: pd.DataFrame):
+    def simulate_daily_activity(self, user_id, business_date: date, aliments_df: pd.DataFrame):
         """
         Simule les activités alimentaires quotidiennes de l'utilisateur pour une date donnée.
 
@@ -192,10 +193,14 @@ class User:
         les aliments consommés en fonction des probabilités et des contraintes caloriques.
 
         Args:
+            business_date: La date du jour
             user_id: user id
             aliments_df (pd.DataFrame): Le DataFrame contenant les informations sur les aliments.
         """
-        heures_de_connexion = self.generer_heures_connexion()
+        np.random.seed(seed=business_date.toordinal() + user_id)  # Seed for reproducibility
+        random.seed(business_date.toordinal() + user_id)  # Also set the random seed
+
+        heures_de_connexion = self.generer_heures_connexion(business_date)
         self.aliments_consomme = []
         aliments_logs = []
 
@@ -238,9 +243,14 @@ class User:
             dict: Un dictionnaire contenant la date et la liste des aliments consommés.
         """
 
-        np.random.seed(seed=business_date.toordinal())
+        # Si business_date est une chaîne, convertissez-la en date
+        if isinstance(business_date, str):
+            business_date = datetime.strptime(business_date, "%Y-%m-%d").date()
 
-        food_per_meal = self.simulate_daily_activity(user_id, aliments_df)
+        np.random.seed(seed=business_date.toordinal())
+        random.seed(business_date.toordinal() + user_id)  # Seed for reproducibility
+
+        food_per_meal = self.simulate_daily_activity(user_id, business_date, aliments_df)
 
         keys = ['user_id', 'meal_id', 'heure_repas', 'aliment_id', 'quantity']
 
@@ -249,6 +259,7 @@ class User:
         for index, row in food_per_meal.iterrows():
             for key in keys:
                 connexion_day[key].append(row[key])
+            #connexion_day['date'].append(business_date.strftime("%Y-%m-%d"))  # Ajouter la date pour chaque entrée
 
         return connexion_day
 
@@ -270,7 +281,7 @@ class Standard(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "sensor_api/data/user/standard_class.xlsx"
+        type_food_file = "standard_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'standard', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -303,7 +314,7 @@ class MeatLover(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "sensor_api/data/user/meat_lover_class.xlsx"
+        type_food_file = "meat_lover_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'meat_lover', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -335,7 +346,7 @@ class Vegetarian(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "sensor_api/data/user/vegetarian_class.xlsx"
+        type_food_file = "vegetarian_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'vegetarian', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -367,7 +378,7 @@ class Vegan(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "sensor_api/data/user/vegan_class.xlsx"
+        type_food_file = "vegan_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'vegan', type_food_file)
         self.heures_repas = {
             1: '08:00',  # petit_dejeuner
@@ -399,7 +410,7 @@ class Fasting(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "sensor_api/data/user/fasting_class.xlsx"
+        type_food_file = "fasting_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'fasting', type_food_file)
         self.heures_repas = {
             1: '12:00',  # dejeuner
@@ -427,7 +438,7 @@ class Random(User):
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
-        type_food_file = "sensor_api/data/user/random_eater_class.xlsx"
+        type_food_file = "random_eater_class.xlsx"
         super().__init__(nom, prenom, age, sexe, user_id, 'random', type_food_file)
         self.heures_repas = {
             1: '13:00',
