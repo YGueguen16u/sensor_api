@@ -1,5 +1,6 @@
 import sys
 import os
+import openpyxl
 
 # Ajouter le répertoire racine du projet au sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..'))

@@ -4,6 +4,9 @@ import pandas as pd
 import numpy as np
 from datetime import date, datetime
 
+import openpyxl
+
+
 try:
     from data_engineering.sensor_api.fake_data.sensor import create_user_instance
 except ImportError:
