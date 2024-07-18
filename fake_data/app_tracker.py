@@ -17,6 +17,8 @@ import os
 
 # Ajoutez le répertoire parent de 'data_engineering' au PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
 
 class AppTracker:
     def __init__(self, user_data: list) -> None:
