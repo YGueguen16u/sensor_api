@@ -5,10 +5,10 @@ import random
 import openpyxl
 import os
 
-# Chemin du répertoire contenant ce script
+# Path to the directory containing this script
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
-# Classe de base Mangeur
+# Base User class
 class User:
     """
     Class User
@@ -35,7 +35,7 @@ class User:
         self.facteur_calories = 1.2 if sexe == 'homme' else 1.0
         self.heures_repas = {}
         self.intervalles_calories = {}
-        self.type_food_file = type_food  # Remplacez par le chemin réel
+        self.type_food_file = type_food  # Replace with actual path
         self.probabilites_df = pd.read_excel(self.type_food_file)
         self.aliments_consomme = []
 
@@ -45,15 +45,15 @@ class User:
 
     def generer_heures_connexion(self, business_date=date):
         """
-        Génère les heures de connexion pour chaque repas avec une variation aléatoire.
+        Generate connection times for each meal with random variation.
 
-        Pour chaque repas défini dans `self.heures_repas`, cette méthode génère une heure de connexion
-        avec une variation aléatoire autour de l'heure prévue. Si la classe de mangeur est 'random',
-        la variation peut aller de -60 à +300 minutes. Sinon, la variation est limitée à -60 à +60 minutes.
+        For each meal defined in `self.heures_repas`, this method generates a connection time
+        with random variation around the scheduled time. If the eater class is 'random',
+        the variation can range from -60 to +300 minutes. Otherwise, variation is limited to -60 to +60 minutes.
 
         Returns:
-            list of tuple: Une liste de tuples où chaque tuple contient le numéro du repas et l'heure de connexion variée.
-                        Exemple: [(1, datetime), (2, datetime), ...]
+            list of tuple: A list of tuples where each tuple contains the meal number and the varied connection time.
+                        Example: [(1, datetime), (2, datetime), ...]
         """
         random.seed(business_date.toordinal() + self.user_id)  # Seed based on date and user_id for reproducibility
         heures_de_connexion = []
@@ -69,16 +69,16 @@ class User:
 
     def choisir_types_aliments(self, repas):
         """
-        Choisit les types d'aliments à consommer pour un repas donné en fonction des probabilités.
+        Choose food types to consume for a given meal based on probabilities.
 
-        Utilise les colonnes spécifiques aux moyennes et écarts types pour le repas pour générer
-        des probabilités et choisir aléatoirement les types d'aliments en fonction de ces probabilités.
+        Uses meal-specific columns for means and standard deviations to generate
+        probabilities and randomly select food types based on these probabilities.
 
         Args:
-            repas (int): Le numéro du repas (1 pour petit déjeuner, 2 pour déjeuner, etc.)
+            repas (int): The meal number (1 for breakfast, 2 for lunch, etc.)
 
         Returns:
-            np.ndarray: Un tableau des types d'aliments choisis.
+            np.ndarray: An array of chosen food types.
         """
         repas_col_avg = f'Meal_{repas}_avg'
         repas_col_std = f'Meal_{repas}_std'
@@ -88,29 +88,29 @@ class User:
         std_devs = self.probabilites_df[repas_col_std]
 
         probabilites = np.random.normal(moyennes, std_devs)
-        probabilites = np.clip(probabilites, 0, None)  # S'assurer que les probabilités ne sont pas négatives
+        probabilites = np.clip(probabilites, 0, None)  # Ensure probabilities are not negative
 
         total_probabilite = np.sum(probabilites)
         if total_probabilite > 0:
-            probabilites = probabilites / total_probabilite  # Normaliser pour que la somme des probabilités soit 1
+            probabilites = probabilites / total_probabilite  # Normalize so probabilities sum to 1
 
         types_choisis = np.random.choice(types, size=len(types), p=probabilites)
         return types_choisis
 
     def determiner_quantite(self, type_aliment):
         """
-        Détermine la quantité d'un aliment en fonction du type d'aliment et de la classe de mangeur.
+        Determine the quantity of a food item based on its type and the eater class.
 
         Returns:
-            int: La quantité d'aliment.
+            int: The quantity of food.
         """
-        # 5% de chances que la quantité soit nulle
+        # 5% chance that the quantity is zero
         if random.random() < 0.04:
             return 0
         elif random.random() > 0.9999:
             return random.randint(100, 1000)
 
-        quantite = 1  # Quantité par défaut
+        quantite = 1  # Default quantity
 
         if self.classe_mangeur == 'meat_lover':
             if type_aliment in ['Viande', 'Poisson', 'Oeuf'] and random.random() < 0.30:
@@ -130,35 +130,35 @@ class User:
 
     def selectionner_aliments(self, aliments_df, types_choisis, repas, min_calories, max_calories):
         """
-        Sélectionne les aliments à consommer en fonction des types choisis et des contraintes caloriques.
+        Select foods to consume based on chosen types and caloric constraints.
 
-        Les aliments sont choisis aléatoirement à partir des types sélectionnés, jusqu'à ce que le
-        minimum de calories soit atteint. Si les calories totales dépassent le maximum autorisé,
-        des aliments sont retirés en fonction de leur probabilité.
+        Foods are randomly chosen from the selected types until the minimum calorie
+        requirement is met. If total calories exceed the maximum allowed,
+        foods are removed based on their probability.
 
         Args:
-            aliments_df (pd.DataFrame): Le DataFrame contenant les informations sur les aliments.
-            types_choisis (np.ndarray): Les types d'aliments choisis pour le repas.
-            repas (int): Le numéro du repas (1 pour petit déjeuner, 2 pour déjeuner, etc.)
-            min_calories (float): Le nombre minimum de calories à consommer pour ce repas.
-            max_calories (float): Le nombre maximum de calories à consommer pour ce repas.
+            aliments_df (pd.DataFrame): DataFrame containing food information.
+            types_choisis (np.ndarray): Food types chosen for the meal.
+            repas (int): Meal number (1 for breakfast, 2 for lunch, etc.)
+            min_calories (float): Minimum calories to consume for this meal.
+            max_calories (float): Maximum calories to consume for this meal.
 
         Returns:
-            list of dict: Une liste de dictionnaires représentant les aliments sélectionnés.
+            list of dict: A list of dictionaries representing selected foods.
         """
         min_calories *= self.facteur_calories
         max_calories *= self.facteur_calories
         total_calories = 0
         aliments_selectionnes = []
 
-        exceed_max_calories = random.random() < 0.2  # 30% de chances de pouvoir dépasser max_calories
+        exceed_max_calories = random.random() < 0.2  # 20% chance to exceed max_calories
 
         for type_aliment in types_choisis:
             aliments_du_type = aliments_df[aliments_df['Type'] == type_aliment]
             aliment_choisi = aliments_du_type.sample(n=1).iloc[0].to_dict()
             aliment_choisi['Repas'] = repas
 
-            # Déterminer la quantité de l'aliment
+            # Determine the quantity of the food
             quantite = self.determiner_quantite(type_aliment)
             aliment_choisi['Quantite'] = quantite
             if quantite >= 10:
@@ -169,7 +169,7 @@ class User:
             if total_calories >= min_calories and (exceed_max_calories or total_calories <= max_calories):
                 break
 
-        # Si le total dépasse max_calories et exceed_max_calories est False, retirer des aliments avec les plus faibles probabilités
+        # If the total exceeds max_calories and exceed_max_calories is False, remove foods with the lowest probabilities
         if not exceed_max_calories and total_calories > max_calories:
             while total_calories > max_calories:
                 aliments_selectionnes.sort(key=lambda x: self.probabilite_aliment(x['Type'], x['Repas']))
@@ -180,14 +180,14 @@ class User:
 
     def probabilite_aliment(self, type_aliment, repas):
         """
-        Récupère la probabilité moyenne d'un type d'aliment pour un repas spécifique.
+        Get the average probability of a food type for a specific meal.
 
         Args:
-            type_aliment (str): Le type d'aliment dont on veut connaître la probabilité.
-            repas (int): Le numéro du repas (1 pour petit déjeuner, 2 pour déjeuner, etc.)
+            type_aliment (str): The food type to get the probability for.
+            repas (int): Meal number (1 for breakfast, 2 for lunch, etc.)
 
         Returns:
-            float: La probabilité moyenne de l'aliment pour le repas donné.
+            float: The average probability of the food for the given meal.
         """
         repas_col_avg = f'Meal_{repas}_avg'
         moyenne = self.probabilites_df[self.probabilites_df['Types'] == type_aliment][repas_col_avg].values[0]
@@ -195,15 +195,15 @@ class User:
 
     def simulate_daily_activity(self, user_id, business_date: date, aliments_df: pd.DataFrame):
         """
-        Simule les activités alimentaires quotidiennes de l'utilisateur pour une date donnée.
+        Simulate daily eating activities of the user for a given date.
 
-        Génère les heures de connexion, choisit les types d'aliments pour chaque repas et sélectionne
-        les aliments consommés en fonction des probabilités et des contraintes caloriques.
+        Generates connection times, chooses food types for each meal and selects
+        consumed foods based on probabilities and caloric constraints.
 
         Args:
-            business_date: La date du jour
+            business_date: The current date
             user_id: user id
-            aliments_df (pd.DataFrame): Le DataFrame contenant les informations sur les aliments.
+            aliments_df (pd.DataFrame): DataFrame containing food information.
         """
         np.random.seed(seed=business_date.toordinal() + user_id)  # Seed for reproducibility
         random.seed(business_date.toordinal() + user_id)  # Also set the random seed
@@ -275,174 +275,174 @@ class User:
 # Sous-classe pour les mangeurs standard
 class Standard(User):
     """
-    Classe représentant un mangeur standard.
+    Class representing a standard eater.
 
-    Hérite de la classe User et initialise les attributs spécifiques pour un mangeur standard,
-    y compris les heures de repas et les intervalles de calories pour chaque repas.
+    Inherits from User class and initializes specific attributes for a standard eater,
+    including meal times and calorie ranges for each meal.
 
     Args:
-        nom (str): Le nom de l'utilisateur.
-        prenom (str): Le prénom de l'utilisateur.
-        age (int): L'âge de l'utilisateur.
-        sexe (str): Le sexe de l'utilisateur ('homme' ou 'femme').
-        user_id (int): L'identifiant unique de l'utilisateur.
+        nom (str): User's last name.
+        prenom (str): User's first name.
+        age (int): User's age.
+        sexe (str): User's gender ('homme' or 'femme').
+        user_id (int): User's unique identifier.
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
         type_food_file = "standard_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'standard', type_food_file)
         self.heures_repas = {
-            1: '08:00',  # petit_dejeuner
-            2: '12:00',  # dejeuner
-            3: '16:00',  # gouter
-            4: '20:00'  # diner
+            1: '08:00',  # breakfast
+            2: '12:00',  # lunch
+            3: '16:00',  # snack
+            4: '20:00'  # dinner
         }
         self.intervalles_calories = {
-            1: (300, 500),  # petit_dejeuner
-            2: (600, 800),  # dejeuner
-            3: (200, 300),  # gouter
-            4: (500, 700)  # diner
+            1: (300, 500),  # breakfast
+            2: (600, 800),  # lunch
+            3: (200, 300),  # snack
+            4: (500, 700)  # dinner
         }
 
 
 # Classe MangeurStandard héritant de Mangeur
 class MeatLover(User):
     """
-    Classe représentant un mangeur amateur de viande.
+    Class representing a meat lover eater.
 
-    Hérite de la classe User et initialise les attributs spécifiques pour un mangeur amateur de viande,
-    y compris les heures de repas et les intervalles de calories pour chaque repas.
+    Inherits from User class and initializes specific attributes for a meat lover,
+    including meal times and calorie ranges for each meal.
 
     Args:
-        nom (str): Le nom de l'utilisateur.
-        prenom (str): Le prénom de l'utilisateur.
-        age (int): L'âge de l'utilisateur.
-        sexe (str): Le sexe de l'utilisateur ('homme' ou 'femme').
-        user_id (int): L'identifiant unique de l'utilisateur.
+        nom (str): User's last name.
+        prenom (str): User's first name.
+        age (int): User's age.
+        sexe (str): User's gender ('homme' or 'femme').
+        user_id (int): User's unique identifier.
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
         type_food_file = "meat_lover_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'meat_lover', type_food_file)
         self.heures_repas = {
-            1: '08:00',  # petit_dejeuner
-            2: '12:00',  # dejeuner
-            3: '16:00',  # gouter
-            4: '20:00'  # diner
+            1: '08:00',  # breakfast
+            2: '12:00',  # lunch
+            3: '16:00',  # snack
+            4: '20:00'  # dinner
         }
         self.intervalles_calories = {
-            1: (400, 600),  # petit_dejeuner
-            2: (700, 900),  # dejeuner
-            3: (300, 500),  # gouter
-            4: (600, 800)  # diner
+            1: (400, 600),  # breakfast
+            2: (700, 900),  # lunch
+            3: (300, 500),  # snack
+            4: (600, 800)  # dinner
         }
 
 
 class Vegetarian(User):
     """
-    Classe représentant un mangeur végétarien.
+    Class representing a vegetarian eater.
 
-    Hérite de la classe User et initialise les attributs spécifiques pour un mangeur végétarien,
-    y compris les heures de repas et les intervalles de calories pour chaque repas.
+    Inherits from User class and initializes specific attributes for a vegetarian,
+    including meal times and calorie ranges for each meal.
 
     Args:
-        nom (str): Le nom de l'utilisateur.
-        prenom (str): Le prénom de l'utilisateur.
-        age (int): L'âge de l'utilisateur.
-        sexe (str): Le sexe de l'utilisateur ('homme' ou 'femme').
-        user_id (int): L'identifiant unique de l'utilisateur.
+        nom (str): User's last name.
+        prenom (str): User's first name.
+        age (int): User's age.
+        sexe (str): User's gender ('homme' or 'femme').
+        user_id (int): User's unique identifier.
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
         type_food_file = "vegetarian_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'vegetarian', type_food_file)
         self.heures_repas = {
-            1: '08:00',  # petit_dejeuner
-            2: '12:00',  # dejeuner
-            3: '16:00',  # gouter
-            4: '20:00'  # diner
+            1: '08:00',  # breakfast
+            2: '12:00',  # lunch
+            3: '16:00',  # snack
+            4: '20:00'  # dinner
         }
         self.intervalles_calories = {
-            1: (300, 400),  # petit_dejeuner
-            2: (500, 700),  # dejeuner
-            3: (100, 200),  # gouter
-            4: (450, 600)  # diner
+            1: (300, 400),  # breakfast
+            2: (500, 700),  # lunch
+            3: (100, 200),  # snack
+            4: (450, 600)  # dinner
         }
 
 
 class Vegan(User):
     """
-    Classe représentant un mangeur végétalien.
+    Class representing a vegan eater.
 
-    Hérite de la classe User et initialise les attributs spécifiques pour un mangeur végétalien,
-    y compris les heures de repas et les intervalles de calories pour chaque repas.
+    Inherits from User class and initializes specific attributes for a vegan,
+    including meal times and calorie ranges for each meal.
 
     Args:
-        nom (str): Le nom de l'utilisateur.
-        prenom (str): Le prénom de l'utilisateur.
-        age (int): L'âge de l'utilisateur.
-        sexe (str): Le sexe de l'utilisateur ('homme' ou 'femme').
-        user_id (int): L'identifiant unique de l'utilisateur.
+        nom (str): User's last name.
+        prenom (str): User's first name.
+        age (int): User's age.
+        sexe (str): User's gender ('homme' or 'femme').
+        user_id (int): User's unique identifier.
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
         type_food_file = "vegan_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'vegan', type_food_file)
         self.heures_repas = {
-            1: '08:00',  # petit_dejeuner
-            2: '12:00',  # dejeuner
-            3: '16:00',  # gouter
-            4: '20:00'  # diner
+            1: '08:00',  # breakfast
+            2: '12:00',  # lunch
+            3: '16:00',  # snack
+            4: '20:00'  # dinner
         }
         self.intervalles_calories = {
-            1: (250, 350),  # petit_dejeuner
-            2: (500, 700),  # dejeuner
-            3: (100, 200),  # gouter
-            4: (400, 500)  # diner
+            1: (250, 350),  # breakfast
+            2: (500, 700),  # lunch
+            3: (100, 200),  # snack
+            4: (400, 500)  # dinner
         }
 
 
 class Fasting(User):
     """
-    Classe représentant un mangeur pratiquant le jeûne intermittent.
+    Class representing an intermittent fasting eater.
 
-    Hérite de la classe User et initialise les attributs spécifiques pour un mangeur pratiquant le jeûne,
-    y compris les heures de repas et les intervalles de calories pour chaque repas.
+    Inherits from User class and initializes specific attributes for a fasting eater,
+    including meal times and calorie ranges for each meal.
 
     Args:
-        nom (str): Le nom de l'utilisateur.
-        prenom (str): Le prénom de l'utilisateur.
-        age (int): L'âge de l'utilisateur.
-        sexe (str): Le sexe de l'utilisateur ('homme' ou 'femme').
-        user_id (int): L'identifiant unique de l'utilisateur.
+        nom (str): User's last name.
+        prenom (str): User's first name.
+        age (int): User's age.
+        sexe (str): User's gender ('homme' or 'femme').
+        user_id (int): User's unique identifier.
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
         type_food_file = "fasting_class.XLSX"
         super().__init__(nom, prenom, age, sexe, user_id, 'fasting', type_food_file)
         self.heures_repas = {
-            1: '12:00',  # dejeuner
-            2: '18:00',  # diner
+            1: '12:00',  # lunch
+            2: '18:00',  # dinner
         }
         self.intervalles_calories = {
-            1: (1000, 1200),  # dejeuner
-            2: (800, 1000)  # diner
+            1: (1000, 1200),  # lunch
+            2: (800, 1000)  # dinner
         }
 
 
 class Random(User):
     """
-    Classe représentant un mangeur aléatoire.
+    Class representing a random eater.
 
-    Hérite de la classe User et initialise les attributs spécifiques pour un mangeur aléatoire,
-    y compris les heures de repas et les intervalles de calories pour chaque repas.
+    Inherits from User class and initializes specific attributes for a random eater,
+    including meal times and calorie ranges for each meal.
 
     Args:
-        nom (str): Le nom de l'utilisateur.
-        prenom (str): Le prénom de l'utilisateur.
-        age (int): L'âge de l'utilisateur.
-        sexe (str): Le sexe de l'utilisateur ('homme' ou 'femme').
-        user_id (int): L'identifiant unique de l'utilisateur.
+        nom (str): User's last name.
+        prenom (str): User's first name.
+        age (int): User's age.
+        sexe (str): User's gender ('homme' or 'femme').
+        user_id (int): User's unique identifier.
     """
 
     def __init__(self, nom, prenom, age, sexe, user_id):
@@ -452,25 +452,25 @@ class Random(User):
             1: '13:00',
         }
         self.intervalles_calories = {
-            1: (900, 4500),  # petit_dejeuner
+            1: (900, 4500),  # breakfast
         }
 
 
 # Création d'une instance utilisateur en fonction de la classe de mangeur
 def create_user_instance(user_data: dict) -> User:
     """
-    Crée une instance d'utilisateur en fonction des données fournies et de la classe de mangeur.
+    Create a user instance based on provided data and eater class.
 
-    Cette fonction crée une instance de la classe appropriée d'utilisateur (`Standard`, `MeatLover`,
-    `Vegetarian`, `Vegan`, `Fasting`, ou `Random`) en fonction de la classe de mangeur spécifiée dans
-    `user_data`. Si la classe de mangeur spécifiée n'est pas trouvée, elle retourne une instance de base `User`.
+    This function creates an instance of the appropriate user class (`Standard`, `MeatLover`,
+    `Vegetarian`, `Vegan`, `Fasting`, or `Random`) based on the eater class specified in
+    `user_data`. If the specified eater class is not found, it returns a base `User` instance.
 
     Args:
-        user_data (dict): Un dictionnaire contenant les informations de l'utilisateur, y compris
-                          la clé 'classe_mangeur' qui spécifie la classe de mangeur de l'utilisateur.
+        user_data (dict): A dictionary containing user information, including
+                          the 'classe_mangeur' key that specifies the user's eater class.
 
     Returns:
-        User: Une instance de la classe appropriée de mangeur ou une instance de la classe de base `User`.
+        User: An instance of the appropriate eater class or a base `User` instance.
     """
     classes_mangeurs = {
         'standard': Standard,

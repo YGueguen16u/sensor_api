@@ -15,8 +15,8 @@ except ImportError:
 import sys
 import os
 
-# Ajoutez le répertoire parent de 'data_engineering' au PYTHONPATH
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
+# Add the parent directory of 'data_engineering' to PYTHONPATH
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '.')))
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -25,7 +25,7 @@ class AppTracker:
         """
         Initialize the AppTracker with user data
         """
-        # _users pour l'attribut interne dans la classe AppTracker afin d'éviter le conflit avec la propriété users.
+        # _users for internal attribute in AppTracker class to avoid conflict with users property
         self._users = [create_user_instance(user) for user in user_data]
 
     @property
@@ -47,7 +47,7 @@ class AppTracker:
         print(f"User: {user}")
         print(f"Connexion: {connexion}")
 
-        # Convertir business_date en objet date si c'est une chaîne
+        # Convert business_date to date object if it's a string
         if isinstance(business_date, str):
             business_date = datetime.strptime(business_date, '%Y-%m-%d').date()
 
@@ -83,7 +83,7 @@ class AppTracker:
         aliments_df = pd.read_excel(food_processed)
         user = next((u for u in self.users if u.user_id == user_id), None)
         connexion_day = None if user is None else user.get_daily_activity(user_id, business_date, aliments_df)
-        # Convertir business_date en objet date si c'est une chaîne
+        # Convert business_date to date object if it's a string
         if isinstance(business_date, str):
             business_date = datetime.strptime(business_date, '%Y-%m-%d').date()
         return connexion_day
